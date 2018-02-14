@@ -1,0 +1,1 @@
+web: java -jar target/docusign-webhooks-java-1.0.jar
