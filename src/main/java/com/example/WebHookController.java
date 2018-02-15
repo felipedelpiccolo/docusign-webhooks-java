@@ -1,11 +1,8 @@
 package com.example;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -28,10 +25,10 @@ public class WebHookController {
 
   private final Map<String, BlockingQueue<DocuSignEnvelopeInformation>> eventsByEnvelopeId = new HashMap<>();
 
-  @PostMapping(consumes = "application/xml")
+  @PostMapping(consumes = { "application/xml", "text/xml" })
   public ResponseEntity receiveEvent(@RequestBody DocuSignEnvelopeInformation event) {
     String envelopeId = event.getEnvelopeStatus().getEnvelopeID();
-    if(!eventsByEnvelopeId.containsKey(envelopeId)) {
+    if (!eventsByEnvelopeId.containsKey(envelopeId)) {
       eventsByEnvelopeId.put(envelopeId, new LinkedBlockingDeque<>());
     }
     final Collection<DocuSignEnvelopeInformation> events = eventsByEnvelopeId.get(envelopeId);
@@ -41,7 +38,7 @@ public class WebHookController {
 
   @GetMapping(value = "{envelopeId}", produces = "application/json")
   public ResponseEntity getLastEvent(@PathVariable("envelopeId") String envelopeId) {
-    if(!eventsByEnvelopeId.containsKey(envelopeId)) {
+    if (!eventsByEnvelopeId.containsKey(envelopeId)) {
       return ResponseEntity.notFound().build();
     }
     final BlockingQueue<DocuSignEnvelopeInformation> events = eventsByEnvelopeId.get(envelopeId);
